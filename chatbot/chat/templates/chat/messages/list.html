@@ -1,0 +1,87 @@
+{% load static %}
+
+{% block link %}
+<link rel="stylesheet" href="{% static 'chat/list/mlist.css' %}">
+<style>
+    ::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
+        color: white;
+        opacity: 1; /* Firefox */
+      }
+    ul {
+        list-style-type: none;
+    }
+</style>
+{% endblock %}
+
+{% load chat_filter %}
+
+{% block content %}
+<div class="container">
+    <div class="chat">
+        <div class="chat-header clearfix">
+            
+            {% if target_number != '' %}
+            <div class="chat-about">
+                <div class="chat-with">Chatbot Tanya Sehat</div>
+                <div class="chat-num-messages">already {{chat_list|length}} messages</div>
+            </div>
+            <i class="fa fa-star"></i>
+        </div> <!-- end chat-header -->
+        
+        <div class="chat-history">
+            <ul>
+                {% for message in chat_list %}
+                    {% if message.sender == 0 %}
+                    <li class="clearfix">
+                        <div class="message-data align-right">
+                            <span class="message-data-time" >{{message.create_dt}}</span> &nbsp; &nbsp;
+                            <span class="message-data-name" >me</span> <i class="fa fa-circle me"></i>
+                        </div>
+                        <div class="message other-message float-right">
+                            {{message.message}}
+                        </div>
+                    </li>
+                    {% else %}
+                    <li>
+                        <div class="message-data">
+                            <span class="message-data-name"><i class="fa fa-circle online"></i>Chatbot</span>
+                            <span class="message-data-time">{{message.create_dt}}</span>
+                        </div>
+                        <div class="message my-message">
+                            {{message.message}}
+                        </div>
+                    </li>
+                    {% endif %}
+                    {% endfor %}
+                </ul>
+        </div> <!-- end chat-history -->
+        {% endif %}
+        
+        <form method="POST">
+            {% csrf_token %}
+            <div class="chat-message clearfix">
+                {% if target_number == '' %}
+                    Recipient : <input id="recipient" type="text" name="recipient" placeholder ="Type your message" rows="3"></input>
+                {% else %}
+                    <input type="hidden" type="text" id="recipient" name="recipient" value="{{target_number}}" placeholder ="Type your message" rows="3"></input>
+                {% endif %}
+                <textarea name="message" id="message" placeholder ="Type your message" rows="3"></textarea>
+                
+                <input id="btn_submit" class="button-send" type="submit" value="kirim"></input>
+            </div> <!-- end chat-message -->
+        </form>
+            
+        
+    </div> <!-- end chat -->
+    
+</div> <!-- end container -->
+
+{% endblock %}
+
+{% block script %}
+<script src="{% static 'chat/jquery/jquery.min.js' %}"></script>
+<script src="{% static 'chat/listjs/list.min.js' %}"></script>
+<script src="{% static 'chat/list/mlist.js' %}"></script>
+<script src="{% static 'chat/list/messageform.js' %}"></script>
+{% endblock %}
+
