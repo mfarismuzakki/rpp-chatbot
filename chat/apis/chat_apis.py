@@ -1,5 +1,7 @@
-from email.errors import CharsetError
 import os
+import re
+
+from core.config import *
 
 from django.views.generic import View
 from django.db.models import Q
@@ -8,10 +10,16 @@ from django.utils import timezone
 from user.models import *
 from chat.models import * 
 
-import pickle
-
+from chat.utils.neo4j_setup import Neo4jConnection
+from chat.utils.query_handler import createQuery
 
 class ChatApi(View):
+
+    conn = Neo4jConnection(uri=NEO4J_URI, user=NEO4J_USER, pwd=NEO4J_PWD)
+    notFound = "Mohon ulangi pertanyaan anda"
+
+    def __init__(self):
+        pass
 
     @classmethod
     def get_user_chat(cls, user_id):
@@ -69,54 +77,6 @@ class ChatApi(View):
         return result, target_username
 
     @classmethod
-    def get_username_list(cls, chat_list, user_id):
-        """
-        mendapatkan list nomor telepon chat
-        """
-        # username_list = []
-        # result = []
-
-        # for chat in chat_list: 
-        #     if chat['sender__username'] not in username_list and \
-        #        chat['sender_id'] != user_id:
-
-        #         username_list.append(chat['sender__username'])
-            
-        #     if chat['recipient__username'] not in username_list and \
-        #        chat['recipient_id'] != user_id:
-
-        #         username_list.append(chat['recipient__username'])
- 
-        # result = []       
-        # for chat in chat_list:
-        #     if len(username_list) == 0:
-        #         break
-
-        #     if chat['recipient__username'] in username_list:
-        #         result.append({
-        #             "username" : chat['recipient__username'],
-        #             "user_id" : chat['recipient_id'],
-        #             "message" : chat['message'],
-        #             "create_dt" : chat['create_dt'],
-        #             "type" : chat['type__type'],
-        #         })
-        #         index = username_list.index(chat['recipient__username'])
-        #         username_list.pop(index)
-
-        #     if chat['sender__username'] in username_list:
-        #         result.append({
-        #             "username" : chat['sender__username'],
-        #             "user_id" : chat['sender_id'],
-        #             "message" : chat['message'],
-        #             "create_dt" : chat['create_dt'],
-        #             "type" : chat['type__type'],
-        #         })
-        #         index = username_list.index(chat['sender__username'])
-        #         username_list.pop(index)
-
-        return []
-
-    @classmethod
     def store_message(cls, sender_id, message):
         """
         menyimpan pesan
@@ -127,7 +87,7 @@ class ChatApi(View):
             .filter(id = 1) \
             .first()
        
-        new_message_data = CharsetError(
+        new_message_data = Chat(
             message = message,
             recipient = recipient,
             sender_id = sender_id,
@@ -144,22 +104,31 @@ class ChatApi(View):
         """
         menyimpan balasan pesan dari bot
         """
-
-        # recipient is botadmin
-        recipient = User.objects \
-            .filter(id = sender_id) \
-            .first()
-
         bot_message = cls.response_by_bot(message)
+        if bot_message != cls.notFound:
+            bot_message = cls.listToString(bot_message)
 
-        new_message_data = CharsetError(
+        new_message_data = Chat(
             message = bot_message,
-            recipient = sender_id,
+            recipient_id = sender_id,
             sender_id = 1,
             create_dt = timezone.now()
         )
-        
+
         new_message_data.save()
+
+    @classmethod
+    def listToString(cls, s): 
+        # initialize an empty string
+        str1 = "" 
+        
+        # traverse in the string  
+        for ele in s: 
+            str1 += " "
+            str1 += ele  
+        
+        # return string  
+        return str1 
 
     @classmethod
     def response_by_bot(cls, message):
@@ -167,7 +136,71 @@ class ChatApi(View):
         inferensi balasan dari admin
         """
 
-        return "saat ini admin sedang sibuk, maaf :("
+        list_query_special= [
+            '''
+            MATCH (a:Amalan {name:"solat"})-[:jenis_amalan]->(j:JenisAmalan)
+            MATCH (a)-[:amalan_wajib]->(f:Farduain)
+            MATCH (a)-[:amalan_sunnah]->(s:Sunnah)
+            MATCH (a)-[:amalan_fardu_kifayah]->(fk:FarduKifayah)
+            RETURN j,f,fk
+            ''',
+            '''
+            MATCH (a:Amalan {name:"shaum"})-[:jenis_amalan]->(j:JenisAmalan)
+            MATCH (a)-[:amalan_wajib]->(f:Farduain)
+            MATCH (a)-[:amalan_sunnah]->(s:Sunnah)
+            RETURN j,f
+            '''
+        ]
 
+        stemp = createQuery(message)
+        check = False
+        for x in list_query_special:
+            try:
+                if stemp.replace(" ","") == x.replace(" ",""):
+                    check = True
+                    break
+            except:
+                pass
 
+        if not check:
+            result = cls.conn.query(stemp)
+            if result:
+                temp = []
+                for r in result: 
+                    if r[0].get('name') != None: #jika properti name
+                        if r[0].get('name') not in temp:
+                            temp.append(r[0].get('name'))
+                    elif r[0].get('detail') != None: #jika properti detail
+                        if r[0].get('name') not in temp:
+                            temp.append(r[0].get('detail'))
+                    else: #jika properti type (relasi / predikat)
+                        tampungan = result[0][0].type
+                        tampungan = tampungan.replace("amalan","")
+                        tampungan = tampungan.replace("_"," ")
+                        tampungan = tampungan.replace(" ","",1)
+                        if tampungan not in temp:
+                            temp.append(tampungan)
 
+                return (temp)
+            else:
+                return (cls.notFound)
+        else:
+            result = cls.conn.query(stemp)
+            if result:
+                temp = []
+                for r in result:
+                    for i in range(len(r)):
+                        try:
+                            if r[i].get('name') != None: #jika properti name
+                                if r[i].get('name') not in temp:
+                                    temp.append(r[i].get('name'))
+                            if r[i].get('detail') != None: #jika properti detail
+                                if r[i].get('detail') not in temp:
+                                    temp.append(r[i].get('detail'))
+                        except:
+                            if r[i].get('name') != None: #jika properti name
+                                if r[i].get('name') not in temp:
+                                    temp.append(r[i].get('name'))
+                return(temp)
+            else:
+                return(cls.notFound)

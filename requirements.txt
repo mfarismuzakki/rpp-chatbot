@@ -3,3 +3,5 @@ Django==4.0.3
 psycopg2-binary==2.9.3
 sqlparse==0.4.2
 tzdata==2022.1
+neo4j==4.4.3
+neo4j-driver==4.4.3

@@ -1,0 +1,35 @@
+subjek,predikat,objek
+solat,jenis amalan,fardu'ain
+solat,jenis amalan,fardu kifayah
+solat,jenis amalan,sunnah
+solat,fardu'ain,subuh
+solat,fardu'ain,dzuhur
+solat,fardu'ain,ashar
+solat,fardu'ain,maghrib
+solat,fardu'ain,isya
+solat,sunnah,dhuha
+solat,sunnah,tahajud
+solat,sunnah,rawatib
+solat,sunnah,qiyamul lail
+solat,fardu kifayah,solat jenazah
+shaum,jenis amalan,fardu'ain
+shaum,jenis amalan,sunnah
+shaum,fardu'ain,nazar
+shaum,fardu'ain,ramadhan
+shaum,fardu'ain,kifarat
+shaum,sunnah,syawal
+shaum,sunnah,arafah
+shaum,sunnah,Yaumul bidh
+shaum,sunnah,senin/kamis
+zakat,fardu'ain,fitrah
+zakat,fardu'ain,mal
+solat,deskripsi,(deskripsi solat)
+shaum,deskripsi,(deskripsi shaum)
+zakat,deskripsi,(deskripsi zakat)
+wudhu,deskripsi,(deskripsi wudhu)
+rawatib,tata cara,"dikerjakan seperti sholat pada umumnya pada waktu yang sudah ditentukan sebanyak 12 rakaat, yaitu 2 rakaat sebelum subuh, 2 rakaat sebelum dzuhur, 2 rakaat setelah dzuhur, 2 rakaat sebelum ashar, 2 rakaat setelah magrib, dan 2 rakaat setelah isya"
+fitrah,tata cara,"dilakukan dengan cara membayar dengan makanan pokok sebesar 1 sha' (2,5KG). Penyerahan kepada mustahik selambat - lambatnya adalah sebelum sholat idul fitri"
+yaumul bidh,tata cara,"niatkan dalam hati akan melakukan shaum, lakukan pada pertengahan bulan kalender hijriyah (13,14,15). Jangan lupa, jika bertepatan dengan hari tasyrik maka dilarang melakukan shaum."
+fardu'ain,hukum amalan,Wajib dikerjakan untuk setiap individu
+fardu Kifayah,hukum amalan,Gugur kewajiban jika ada yang sudah mengerjakan
+sunnah,hukum amalan,Tidak dikerjakan merugi

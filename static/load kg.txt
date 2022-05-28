@@ -1,0 +1,38 @@
+LOAD CSV WITH HEADERS FROM 'file:///kg.csv' AS row
+MERGE (a:Amalan {name: row.subjek})
+with row, a
+
+FOREACH(ignoreMe IN CASE WHEN row.predikat = "jenis amalan" THEN [1] ELSE []
+END |
+MERGE (j:JenisAmalan {name: row.objek})
+MERGE (a)-[:jenis_amalan]->(j))
+
+FOREACH(ignoreMe IN CASE WHEN row.predikat = "fardu'ain" THEN [1] ELSE
+[] END |
+MERGE (w:Farduain {name: row.objek})
+MERGE (a)-[:amalan_wajib]->(w))
+
+FOREACH(ignoreMe IN CASE WHEN row.predikat = 'sunnah' THEN [1] ELSE
+[] END |
+MERGE (s:Sunnah {detail: row.objek})
+MERGE (a)-[:amalan_sunnah]->(s))
+
+FOREACH(ignoreMe IN CASE WHEN row.predikat = 'fardu kifayah' THEN [1] ELSE
+[] END |
+MERGE (fk:FarduKifayah {detail: row.objek})
+MERGE (a)-[:amalan_fardu_kifayah]->(fk))
+
+FOREACH(ignoreMe IN CASE WHEN row.predikat = 'deskripsi' THEN [1] ELSE
+[] END |
+MERGE (de:Deskripsi {detail: row.objek})
+MERGE (a)-[:deskripsi]->(de))
+
+FOREACH(ignoreMe IN CASE WHEN row.predikat = 'tata cara' THEN [1] ELSE
+[] END |
+MERGE (tc:TataCara {detail: row.objek})
+MERGE (a)-[:tata_cara]->(tc))
+
+FOREACH(ignoreMe IN CASE WHEN row.predikat = 'hukum amalan' THEN [1] ELSE
+[] END |
+MERGE (ha:HukumAmalan {detail: row.objek})
+MERGE (a)-[:hukum_amalan]->(ha))
