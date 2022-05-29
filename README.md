@@ -19,7 +19,7 @@
 This project using several techstack:
 
 - [Postgresql] - Database management system
-- [Neo4j] - Database management system
+- [Neo4j] - Database management system (Knowledge Base)
 - [Django] - Fullstack framework
 - [node.js] - evented I/O for the backend
 - [jQuery] - Frontend
