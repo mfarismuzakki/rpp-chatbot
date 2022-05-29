@@ -1,17 +1,18 @@
-# Chatbot
+# Chatbot (Muslim Assistant)
 
 [![Build Status](https://travis-ci.org/joemccann/dillinger.svg?branch=master)](https://travis-ci.org/joemccann/dillinger)
 
-## Kelompok (?) Representasi & Pengetahuan
+## Knowledge & Representation
 
 - 23521028 Rizal Kusuma Putra
 - 23521077 Muhammad Faris Muzakki
 
 ## Features
 
-- Lorem Ipsum
-- Lorem Ipsum
-- Lorem Ipsum
+- Sholat
+- Syiam
+- Zakat
+- Etc
 
 ## Tech
 
@@ -21,7 +22,7 @@ This project using several techstack:
 - [Neo4j] - Database management system
 - [Django] - Fullstack framework
 - [node.js] - evented I/O for the backend
-- [jQuery] - xxxx
+- [jQuery] - Frontend
 
 ## Installation
 
